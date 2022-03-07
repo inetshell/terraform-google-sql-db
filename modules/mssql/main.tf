@@ -156,7 +156,7 @@ resource "random_password" "user-password" {
 }
 
 resource "random_password" "additional_passwords" {
-  for_each   = local.users
+  for_each   = nonsensitive(local.users)
   length     = 8
   special    = true
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
@@ -171,7 +171,7 @@ resource "google_sql_user" "default" {
 }
 
 resource "google_sql_user" "additional_users" {
-  for_each   = local.users
+  for_each   = nonsensitive(local.users)
   project    = var.project_id
   name       = each.value.name
   password   = lookup(each.value, "password", random_password.additional_passwords[each.value.name].result)

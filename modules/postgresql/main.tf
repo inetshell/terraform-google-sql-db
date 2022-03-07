@@ -172,7 +172,7 @@ resource "random_id" "user-password" {
 }
 
 resource "random_id" "additional_passwords" {
-  for_each = local.users
+  for_each = nonsensitive(local.users)
   keepers = {
     name = google_sql_database_instance.default.name
   }
@@ -195,7 +195,7 @@ resource "google_sql_user" "default" {
 }
 
 resource "google_sql_user" "additional_users" {
-  for_each = local.users
+  for_each = nonsensitive(local.users)
   project  = var.project_id
   name     = each.value.name
   password = coalesce(each.value["password"], random_id.additional_passwords[each.value.name].hex)
